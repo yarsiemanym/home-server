@@ -1,12 +1,22 @@
-variable "pihole_password" {
+variable "local_domain" {
+    type = string
+    default = "home"
+}
+
+variable "pihole_admin_password" {
     type = string
 }
 
-variable "domain" {
+variable "pihole_dns_1" {
     type = string
+    default = "208.67.222.222"
 }
 
+variable "pihole_dns_2" {
+    type = string
+    default = "208.67.220.220"
+}
 
-variable "additional_dns_records" {
+variable "custom_dns_records" {
     type = list(string)
 }
