@@ -1,5 +1,0 @@
-kind: daemonset
-daemonset:
-  hostPorts: true
-service:
-  loadBalancerIP: ${LOADBALANCER_IP}

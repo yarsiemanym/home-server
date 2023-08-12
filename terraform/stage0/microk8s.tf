@@ -19,3 +19,20 @@ resource "null_resource" "microk8s" {
 
   depends_on = [null_resource.upgrade_packages]
 }
+
+resource "null_resource" "nginx" {
+  connection {
+    host = var.host
+    user = var.user
+  }
+
+  provisioner "remote-exec" {
+    when = create
+    inline = [
+      "echo ${var.password} | sudo -p '' -S true",
+      "sudo microk8s enable ingress"
+    ]
+  }
+
+  depends_on = [null_resource.microk8s]
+}
