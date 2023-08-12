@@ -66,25 +66,13 @@ resource "kubernetes_daemonset" "pihole" {
           }
 
           volume_mount {
-            name       = "dnsmasq-conf"
+            name       = "dnsmasq-data"
             mount_path = "/etc/dnsmasq.d"
           }
 
           volume_mount {
             name       = "pihole-data"
             mount_path = "/etc/pihole"
-          }
-
-          volume_mount {
-            name       = "pihole-conf"
-            mount_path = "/etc/pihole/custom.list"
-            sub_path   = "custom.list"
-          }
-
-          volume_mount {
-            name       = "pihole-conf"
-            mount_path = "/etc/pihole/setupVars.conf"
-            sub_path   = "setupVars.conf"
           }
 
           resources {
@@ -102,17 +90,37 @@ resource "kubernetes_daemonset" "pihole" {
           }
         }
 
-        volume {
-          name = "pihole-data"
-          persistent_volume_claim {
-            claim_name = kubernetes_persistent_volume_claim.pihole_data.metadata.0.name
+        init_container {
+          image   = "busybox:1.36"
+          name    = "init"
+          command = ["/bin/sh"]
+          args    = ["-c", "cp /tmp/dnsmasq/* /etc/dnsmasq.d/ && cp /tmp/pihole/* /etc/pihole/"]
+
+          volume_mount {
+            name       = "pihole-conf"
+            mount_path = "/tmp/pihole"
+          }
+
+          volume_mount {
+            name       = "dnsmasq-conf"
+            mount_path = "/tmp/dnsmasq"
+          }
+
+          volume_mount {
+            name       = "dnsmasq-data"
+            mount_path = "/etc/dnsmasq.d"
+          }
+
+          volume_mount {
+            name       = "pihole-data"
+            mount_path = "/etc/pihole"
           }
         }
 
         volume {
-          name = "pihole-conf"
-          config_map {
-            name = kubernetes_config_map.pihole_conf.metadata.0.name
+          name = "dnsmasq-data"
+          persistent_volume_claim {
+            claim_name = "dnsmasq-data"
           }
         }
 
@@ -120,6 +128,20 @@ resource "kubernetes_daemonset" "pihole" {
           name = "dnsmasq-conf"
           config_map {
             name = kubernetes_config_map.dnsmasq_conf.metadata.0.name
+          }
+        }
+
+        volume {
+          name = "pihole-data"
+          persistent_volume_claim {
+            claim_name = "pihole-data"
+          }
+        }
+
+        volume {
+          name = "pihole-conf"
+          config_map {
+            name = kubernetes_config_map.pihole_conf.metadata.0.name
           }
         }
       }
@@ -138,6 +160,24 @@ resource "kubernetes_secret" "pihole_admin_password" {
   }
 }
 
+resource "kubernetes_persistent_volume_claim" "dnsmasq_data" {
+  metadata {
+    name      = "dnsmasq-data"
+    namespace = kubernetes_namespace.pihole.metadata.0.name
+  }
+
+  spec {
+    access_modes       = ["ReadWriteOnce"]
+    storage_class_name = "microk8s-hostpath"
+
+    resources {
+      requests = {
+        storage = "10Mi"
+      }
+    }
+  }
+}
+
 resource "kubernetes_persistent_volume_claim" "pihole_data" {
   metadata {
     name      = "pihole-data"
@@ -145,8 +185,8 @@ resource "kubernetes_persistent_volume_claim" "pihole_data" {
   }
 
   spec {
-    access_modes       = ["ReadWriteMany"]
-    storage_class_name = "standard"
+    access_modes       = ["ReadWriteOnce"]
+    storage_class_name = "microk8s-hostpath"
 
     resources {
       requests = {

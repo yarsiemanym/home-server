@@ -36,3 +36,20 @@ resource "null_resource" "nginx" {
 
   depends_on = [null_resource.microk8s]
 }
+
+resource "null_resource" "host_storage" {
+  connection {
+    host = var.host
+    user = var.user
+  }
+
+  provisioner "remote-exec" {
+    when = create
+    inline = [
+      "echo ${var.password} | sudo -p '' -S true",
+      "sudo microk8s enable hostpath-storage"
+    ]
+  }
+
+  depends_on = [null_resource.microk8s]
+}
