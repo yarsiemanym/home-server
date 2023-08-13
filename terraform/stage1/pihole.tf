@@ -271,6 +271,8 @@ resource "kubernetes_config_map" "pihole_conf" {
       REV_SERVER_DOMAIN=${var.local_domain}
       PIHOLE_DNS_1=${var.pihole_dns_1}
       PIHOLE_DNS_2=${var.pihole_dns_2}
+      WEBUIBOXEDLAYOUT=traditional
+      WEBTHEME=default-auto
     EOF
   }
 }
