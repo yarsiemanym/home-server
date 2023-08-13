@@ -19,13 +19,6 @@ resource "null_resource" "microk8s" {
     ]
   }
 
-  provisioner "remote-exec" {
-    when = destroy
-    inline = [
-      "microk8s stop"
-    ]
-  }
-
   depends_on = [null_resource.upgrade_packages]
 }
 
@@ -39,13 +32,6 @@ resource "null_resource" "nginx" {
     when = create
     inline = [
       "microk8s enable ingress"
-    ]
-  }
-
-  provisioner "remote-exec" {
-    when = destroy
-    inline = [
-      "microk8s disable ingress"
     ]
   }
 
@@ -65,13 +51,6 @@ resource "null_resource" "host_storage" {
     ]
   }
 
-  provisioner "remote-exec" {
-    when = destroy
-    inline = [
-      "microk8s disable hostpath-storage"
-    ]
-  }
-
   depends_on = [null_resource.microk8s]
 }
 
@@ -85,13 +64,6 @@ resource "null_resource" "observability" {
     when = create
     inline = [
       "microk8s enable observability"
-    ]
-  }
-
-  provisioner "remote-exec" {
-    when = destroy
-    inline = [
-      "microk8s disable observability"
     ]
   }
 
