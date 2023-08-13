@@ -90,6 +90,46 @@ resource "kubernetes_daemonset" "pihole" {
           }
         }
 
+        container {
+          image = "ekofr/pihole-exporter:v0.4.0"
+          name  = "exporter"
+
+          port {
+            name           = "http"
+            protocol       = "TCP"
+            container_port = 9617
+          }
+
+          env {
+            name  = "PIHOLE_HOSTNAME"
+            value = "localhost"
+          }
+
+          env {
+            name = "PIHOLE_PASSWORD"
+            value_from {
+              secret_key_ref {
+                name = kubernetes_secret.pihole_admin_password.metadata.0.name
+                key  = "password"
+              }
+            }
+          }
+
+          resources {
+            requests = {
+              cpu    = "200m"
+              memory = "256Mi"
+            }
+          }
+
+          liveness_probe {
+            http_get {
+              path = "/metrics"
+              port = 9617
+            }
+          }
+        }
+
         init_container {
           image   = "busybox:1.36"
           name    = "init"
@@ -247,6 +287,8 @@ resource "kubernetes_config_map" "pihole_conf" {
   data = {
     "custom.list" = <<-EOF
       ${join("\n", formatlist("%s pihole.${var.local_domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
+      ${join("\n", formatlist("%s grafana.${var.local_domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
+      ${join("\n", formatlist("%s prometheus.${var.local_domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
       ${join("\n", formatlist("%s.${var.local_domain}", var.custom_dns_records))}
     EOF
 
@@ -299,6 +341,31 @@ resource "kubernetes_service" "pihole_http" {
   }
 }
 
+resource "kubernetes_service" "pihole_exporter" {
+  metadata {
+    name      = "pihole-exporter"
+    namespace = kubernetes_namespace.pihole.metadata.0.name
+    labels = {
+      app = "pihole"
+    }
+  }
+
+  spec {
+    selector = {
+      app = "pihole"
+    }
+
+    type = "ClusterIP"
+
+    port {
+      name        = "http"
+      protocol    = "TCP"
+      port        = 9617
+      target_port = 9617
+    }
+  }
+}
+
 resource "kubernetes_ingress_v1" "pihole" {
   metadata {
     name      = "pihole"
@@ -325,3 +392,4 @@ resource "kubernetes_ingress_v1" "pihole" {
     }
   }
 }
+

@@ -10,10 +10,19 @@ resource "null_resource" "microk8s" {
       "echo ${var.password} | sudo -p '' -S true",
       "sudo snap install kubectl --classic",
       "sudo snap install microk8s --classic",
-      "sudo microk8s start",
-      "sudo microk8s status --wait-ready",
+      "sudo usermod -a -G microk8s pi",
+      "newgrp microk8s",
+      "microk8s start",
+      "microk8s status --wait-ready",
       "mkdir ~/.kube",
-      "sudo microk8s config > ~/.kube/config"
+      "microk8s config > ~/.kube/config"
+    ]
+  }
+
+  provisioner "remote-exec" {
+    when = destroy
+    inline = [
+      "microk8s stop"
     ]
   }
 
@@ -29,8 +38,14 @@ resource "null_resource" "nginx" {
   provisioner "remote-exec" {
     when = create
     inline = [
-      "echo ${var.password} | sudo -p '' -S true",
-      "sudo microk8s enable ingress"
+      "microk8s enable ingress"
+    ]
+  }
+
+  provisioner "remote-exec" {
+    when = destroy
+    inline = [
+      "microk8s disable ingress"
     ]
   }
 
@@ -46,8 +61,37 @@ resource "null_resource" "host_storage" {
   provisioner "remote-exec" {
     when = create
     inline = [
-      "echo ${var.password} | sudo -p '' -S true",
-      "sudo microk8s enable hostpath-storage"
+      "microk8s enable hostpath-storage"
+    ]
+  }
+
+  provisioner "remote-exec" {
+    when = destroy
+    inline = [
+      "microk8s disable hostpath-storage"
+    ]
+  }
+
+  depends_on = [null_resource.microk8s]
+}
+
+resource "null_resource" "observability" {
+  connection {
+    host = var.host
+    user = var.user
+  }
+
+  provisioner "remote-exec" {
+    when = create
+    inline = [
+      "microk8s enable observability"
+    ]
+  }
+
+  provisioner "remote-exec" {
+    when = destroy
+    inline = [
+      "microk8s disable observability"
     ]
   }
 
