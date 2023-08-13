@@ -30,7 +30,7 @@ local_domain             = "{your-local-domain}"
 custom_dns_records       = [
   "{ip-address} {subdomain}"
 ]
-dhcp_server              = "{your-dchp-server-ip-address}"
+dhcp_server              = "{your-dhcp-server-ip-address}"
 dhcp_cidr                = "{your-dhcp-subnet-cidr-block}
 ```
 
@@ -45,7 +45,7 @@ terraform init
 terraform apply
 ```
 
-7. Change the DNS server settings in your router to be the IP address of the Raspberry Pi.
+7. Change the DNS server in your router's DHCP settings to be the IP address of the Raspberry Pi.
 
 8. Open a web browser and navigate to https://pihole.{your-local-domain}/admin. You should see the Pi-Hole dashboard.
 
