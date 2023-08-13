@@ -3,6 +3,14 @@ variable "local_domain" {
     default = "home"
 }
 
+variable "dhcp_server" {
+    type = string
+}
+
+variable "dhcp_cidr" {
+    type = string
+}
+
 variable "pihole_admin_password" {
     type = string
 }

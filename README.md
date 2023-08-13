@@ -30,6 +30,8 @@ local_domain             = "{your-local-domain}"
 custom_dns_records       = [
   "{ip-address} {subdomain}"
 ]
+dhcp_server              = "{your-dchp-server-ip-address}"
+dhcp_cidr                = "{your-dhcp-subnet-cidr-block}
 ```
 
 6. Apply the Terraform.
