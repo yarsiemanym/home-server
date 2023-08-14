@@ -77,7 +77,7 @@ resource "kubernetes_daemonset" "pihole" {
 
           resources {
             requests = {
-              cpu    = "100m"
+              cpu    = "200m"
               memory = "256Mi"
             }
           }
