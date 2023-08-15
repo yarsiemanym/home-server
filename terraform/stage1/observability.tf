@@ -5,8 +5,12 @@ resource "kubernetes_ingress_v1" "grafana" {
   }
 
   spec {
+    tls {
+      hosts       = ["grafana.${var.domain}"]
+      secret_name = kubernetes_manifest.grafana_cert.manifest.spec.secretName
+    }
     rule {
-      host = "grafana.${var.local_domain}"
+      host = "grafana.${var.domain}"
       http {
         path {
           path      = "/"
@@ -25,6 +29,35 @@ resource "kubernetes_ingress_v1" "grafana" {
   }
 }
 
+resource "kubernetes_manifest" "grafana_cert" {
+  manifest = {
+    apiVersion = "cert-manager.io/v1"
+    kind       = "Certificate"
+
+    metadata = {
+      name      = "grafana"
+      namespace = "observability"
+    }
+
+    spec = {
+      dnsNames    = ["grafana.${var.domain}"]
+      duration    = "8760h0m0s" // 1 year
+      renewBefore = "720h0m0s"  // 1 month
+      secretName  = "grafana-cert"
+
+      privateKey = {
+        rotationPolicy = "Always"
+      }
+
+      issuerRef = {
+        kind  = kubernetes_manifest.ca_issuer.manifest.kind
+        name  = kubernetes_manifest.ca_issuer.manifest.metadata.name
+        group = "cert-manager.io"
+      }
+    }
+  }
+}
+
 resource "kubernetes_ingress_v1" "prometheus" {
   metadata {
     name      = "prometheus"
@@ -32,8 +65,12 @@ resource "kubernetes_ingress_v1" "prometheus" {
   }
 
   spec {
+    tls {
+      hosts       = ["prometheus.${var.domain}"]
+      secret_name = kubernetes_manifest.prometheus_cert.manifest.spec.secretName
+    }
     rule {
-      host = "prometheus.${var.local_domain}"
+      host = "prometheus.${var.domain}"
       http {
         path {
           path      = "/"
@@ -47,6 +84,35 @@ resource "kubernetes_ingress_v1" "prometheus" {
             }
           }
         }
+      }
+    }
+  }
+}
+
+resource "kubernetes_manifest" "prometheus_cert" {
+  manifest = {
+    apiVersion = "cert-manager.io/v1"
+    kind       = "Certificate"
+
+    metadata = {
+      name      = "prometheus"
+      namespace = "observability"
+    }
+
+    spec = {
+      dnsNames    = ["prometheus.${var.domain}"]
+      duration    = "8760h0m0s" // 1 year
+      renewBefore = "720h0m0s"  // 1 month
+      secretName  = "prometheus-cert"
+
+      privateKey = {
+        rotationPolicy = "Always"
+      }
+
+      issuerRef = {
+        kind  = kubernetes_manifest.ca_issuer.manifest.kind
+        name  = kubernetes_manifest.ca_issuer.manifest.metadata.name
+        group = "cert-manager.io"
       }
     }
   }

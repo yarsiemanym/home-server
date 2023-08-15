@@ -1,13 +1,4 @@
-variable "local_domain" {
-    type = string
-    default = "home"
-}
-
-variable "dhcp_server" {
-    type = string
-}
-
-variable "dhcp_cidr" {
+variable "domain" {
     type = string
 }
 

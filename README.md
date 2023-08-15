@@ -19,19 +19,16 @@
 ```
 host     = "{raspberry-pi-ip-address}"
 user     = "{raspberry-pi-user}"
-password = "{raspberry-pi-password}"
 ```
 
 5. Create a `terrform.tfvars` file in `./terraform/stage1`.
 
 ```
-pihole_admin_password    = "{pihole-admin-password}"
-local_domain             = "{your-local-domain}"
+domain                   = "{your-domain}"
+pihole_admin_password    = "{your-pihole-admin-password}"
 custom_dns_records       = [
   "{ip-address} {subdomain}"
 ]
-dhcp_server              = "{your-dhcp-server-ip-address}"
-dhcp_cidr                = "{your-dhcp-subnet-cidr-block}
 ```
 
 6. Apply the Terraform.
@@ -47,7 +44,7 @@ terraform apply
 
 7. Change the DNS server in your router's DHCP settings to be the IP address of the Raspberry Pi.
 
-8. Open a web browser and navigate to https://pihole.{your-local-domain}/admin. You should see the Pi-Hole dashboard.
+8. Open a web browser and navigate to https://pihole.{your-domain}/admin. You should see the Pi-Hole dashboard.
 
 ## Links
 
@@ -59,6 +56,7 @@ terraform apply
   * [Installing MicroK8s on a Raspberry Pi](https://microk8s.io/docs/install-raspberry-pi)
   * [NGINX Ingress Addon](https://microk8s.io/docs/addon-ingress)
   * [Hostpath Storage Addon](https://microk8s.io/docs/addon-hostpath-storage)
+  * [cert-manager Addon](https://microk8s.io/docs/addon-cert-manager)
 * [Prometheus](https://prometheus.io/)
 * [Grafana](https://grafana.com/)
 * [Pi-hole](https://pi-hole.net/)

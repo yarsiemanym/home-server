@@ -207,8 +207,7 @@ resource "kubernetes_persistent_volume_claim" "dnsmasq_data" {
   }
 
   spec {
-    access_modes       = ["ReadWriteOnce"]
-    storage_class_name = "microk8s-hostpath"
+    access_modes = ["ReadWriteOnce"]
 
     resources {
       requests = {
@@ -225,8 +224,7 @@ resource "kubernetes_persistent_volume_claim" "pihole_data" {
   }
 
   spec {
-    access_modes       = ["ReadWriteOnce"]
-    storage_class_name = "microk8s-hostpath"
+    access_modes = ["ReadWriteOnce"]
 
     resources {
       requests = {
@@ -286,10 +284,10 @@ resource "kubernetes_config_map" "pihole_conf" {
 
   data = {
     "custom.list" = <<-EOF
-      ${join("\n", formatlist("%s pihole.${var.local_domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
-      ${join("\n", formatlist("%s grafana.${var.local_domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
-      ${join("\n", formatlist("%s prometheus.${var.local_domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
-      ${join("\n", formatlist("%s.${var.local_domain}", var.custom_dns_records))}
+      ${join("\n", formatlist("%s pihole.${var.domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
+      ${join("\n", formatlist("%s grafana.${var.domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
+      ${join("\n", formatlist("%s prometheus.${var.domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
+      ${join("\n", formatlist("%s.${var.domain}", var.custom_dns_records))}
     EOF
 
     "setupVars.conf" = <<-EOF
@@ -307,10 +305,7 @@ resource "kubernetes_config_map" "pihole_conf" {
       BLOCKING_ENABLED=true
       TEMPERATUREUNIT=F
       DNSSEC=true
-      REV_SERVER=true
-      REV_SERVER_CIDR=${var.dhcp_cidr}
-      REV_SERVER_TARGET=${var.dhcp_server}
-      REV_SERVER_DOMAIN=${var.local_domain}
+      REV_SERVER=false
       PIHOLE_DNS_1=${var.pihole_dns_1}
       PIHOLE_DNS_2=${var.pihole_dns_2}
       WEBUIBOXEDLAYOUT=traditional
@@ -373,8 +368,12 @@ resource "kubernetes_ingress_v1" "pihole" {
   }
 
   spec {
+    tls {
+      hosts       = ["pihole.${var.domain}"]
+      secret_name = kubernetes_manifest.pihole_cert.manifest.spec.secretName
+    }
     rule {
-      host = "pihole.${var.local_domain}"
+      host = "pihole.${var.domain}"
       http {
         path {
           path      = "/"
@@ -388,6 +387,34 @@ resource "kubernetes_ingress_v1" "pihole" {
             }
           }
         }
+      }
+    }
+  }
+}
+
+resource "kubernetes_manifest" "pihole_cert" {
+  manifest = {
+    apiVersion = "cert-manager.io/v1"
+    kind       = "Certificate"
+
+    metadata = {
+      name      = "pihole-cert"
+      namespace = kubernetes_namespace.pihole.metadata.0.name
+    }
+
+    spec = {
+      dnsNames    = ["pihole.${var.domain}"]
+      duration    = "8760h0m0s" // 1 year
+      renewBefore = "720h0m0s"  // 1 month
+      secretName  = "pihole-cert"
+
+      privateKey = {
+        rotationPolicy = "Always"
+      }
+
+      issuerRef = {
+        kind  = "ClusterIssuer"
+        name  = kubernetes_manifest.ca_issuer.manifest.metadata.name
       }
     }
   }
