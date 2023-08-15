@@ -25,13 +25,12 @@ password = "{raspberry-pi-password}"
 5. Create a `terrform.tfvars` file in `./terraform/stage1`.
 
 ```
-pihole_admin_password    = "{pihole-admin-password}"
-local_domain             = "{your-local-domain}"
-custom_dns_records       = [
+local_domain              = "{your-local-domain}"
+pihole_admin_password     = "{pihole-admin-password}"
+pihole_timezone           = "{your-timezone}
+pihole_custom_dns_records = [
   "{ip-address} {subdomain}"
 ]
-dhcp_server              = "{your-dhcp-server-ip-address}"
-dhcp_cidr                = "{your-dhcp-subnet-cidr-block}
 ```
 
 6. Apply the Terraform.

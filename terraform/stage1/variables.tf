@@ -3,15 +3,11 @@ variable "local_domain" {
     default = "home"
 }
 
-variable "dhcp_server" {
-    type = string
-}
-
-variable "dhcp_cidr" {
-    type = string
-}
-
 variable "pihole_admin_password" {
+    type = string
+}
+
+variable "pihole_timezone" {
     type = string
 }
 
@@ -25,6 +21,6 @@ variable "pihole_dns_2" {
     default = "208.67.220.220"
 }
 
-variable "custom_dns_records" {
+variable "pihole_custom_dns_records" {
     type = list(string)
 }

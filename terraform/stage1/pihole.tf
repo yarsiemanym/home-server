@@ -52,7 +52,7 @@ resource "kubernetes_daemonset" "pihole" {
 
           env {
             name  = "TZ"
-            value = "America/New York"
+            value = var.pihole_timezone
           }
 
           env {
@@ -76,9 +76,9 @@ resource "kubernetes_daemonset" "pihole" {
           }
 
           resources {
-            requests = {
+            limits = {
               cpu    = "200m"
-              memory = "256Mi"
+              memory = "512Mi"
             }
           }
 
@@ -116,7 +116,7 @@ resource "kubernetes_daemonset" "pihole" {
           }
 
           resources {
-            requests = {
+            limits = {
               cpu    = "200m"
               memory = "256Mi"
             }
@@ -154,6 +154,13 @@ resource "kubernetes_daemonset" "pihole" {
           volume_mount {
             name       = "pihole-data"
             mount_path = "/etc/pihole"
+          }
+
+          resources {
+            limits  = {
+              cpu    = "100m"
+              memory = "256Mi"
+            }
           }
         }
 
@@ -207,8 +214,7 @@ resource "kubernetes_persistent_volume_claim" "dnsmasq_data" {
   }
 
   spec {
-    access_modes       = ["ReadWriteOnce"]
-    storage_class_name = "microk8s-hostpath"
+    access_modes = ["ReadWriteOnce"]
 
     resources {
       requests = {
@@ -225,8 +231,7 @@ resource "kubernetes_persistent_volume_claim" "pihole_data" {
   }
 
   spec {
-    access_modes       = ["ReadWriteOnce"]
-    storage_class_name = "microk8s-hostpath"
+    access_modes = ["ReadWriteOnce"]
 
     resources {
       requests = {
@@ -289,7 +294,7 @@ resource "kubernetes_config_map" "pihole_conf" {
       ${join("\n", formatlist("%s pihole.${var.local_domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
       ${join("\n", formatlist("%s grafana.${var.local_domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
       ${join("\n", formatlist("%s prometheus.${var.local_domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
-      ${join("\n", formatlist("%s.${var.local_domain}", var.custom_dns_records))}
+      ${join("\n", formatlist("%s.${var.local_domain}", var.pihole_custom_dns_records))}
     EOF
 
     "setupVars.conf" = <<-EOF
@@ -307,10 +312,7 @@ resource "kubernetes_config_map" "pihole_conf" {
       BLOCKING_ENABLED=true
       TEMPERATUREUNIT=F
       DNSSEC=true
-      REV_SERVER=true
-      REV_SERVER_CIDR=${var.dhcp_cidr}
-      REV_SERVER_TARGET=${var.dhcp_server}
-      REV_SERVER_DOMAIN=${var.local_domain}
+      REV_SERVER=false
       PIHOLE_DNS_1=${var.pihole_dns_1}
       PIHOLE_DNS_2=${var.pihole_dns_2}
       WEBUIBOXEDLAYOUT=traditional
