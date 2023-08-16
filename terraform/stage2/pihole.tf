@@ -78,7 +78,7 @@ resource "kubernetes_daemonset" "pihole" {
           resources {
             limits = {
               cpu    = "500m"
-              memory = "512Mi"
+              memory = "256Mi"
             }
           }
 
@@ -118,7 +118,7 @@ resource "kubernetes_daemonset" "pihole" {
           resources {
             limits = {
               cpu    = "250m"
-              memory = "256Mi"
+              memory = "100Mi"
             }
           }
 
@@ -159,7 +159,7 @@ resource "kubernetes_daemonset" "pihole" {
           resources {
             limits = {
               cpu    = "100m"
-              memory = "256Mi"
+              memory = "100Mi"
             }
           }
         }
