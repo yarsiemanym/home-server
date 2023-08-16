@@ -28,6 +28,8 @@ password = "{raspberry-pi-password}"
 
 ```
 domain                    = "{your-domain}"
+dhcp_server               = "{your-dhcp_ip-address}"
+dhcp_cidr                 = "{your-dhcp-cidr-block}"
 pihole_admin_password     = "{pihole-admin-password}"
 pihole_timezone           = "{your-timezone}
 pihole_custom_dns_records = [

@@ -312,7 +312,10 @@ resource "kubernetes_config_map" "pihole_conf" {
       BLOCKING_ENABLED=true
       TEMPERATUREUNIT=F
       DNSSEC=true
-      REV_SERVER=false
+      REV_SERVER=true
+      REV_SERVER_CIDR=${var.dhcp_cidr}
+      REV_SERVER_TARGET=${var.dhcp_server}
+      REV_SERVER_DOMAIN=${var.domain}
       PIHOLE_DNS_1=${var.pihole_dns_1}
       PIHOLE_DNS_2=${var.pihole_dns_2}
       WEBUIBOXEDLAYOUT=traditional
