@@ -32,6 +32,7 @@ resource "null_resource" "microk8s_addons" {
     inline = [
       "microk8s enable ingress",
       "microk8s enable hostpath-storage",
+      "microk8s enable cert-manager",
       "microk8s enable observability"
     ]
   }

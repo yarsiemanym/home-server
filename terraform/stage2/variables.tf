@@ -1,6 +1,5 @@
-variable "local_domain" {
+variable "domain" {
     type = string
-    default = "home"
 }
 
 variable "pihole_admin_password" {

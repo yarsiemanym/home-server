@@ -77,12 +77,12 @@ resource "kubernetes_daemonset" "pihole" {
 
           resources {
             limits = {
-              cpu    = "200m"
+              cpu    = "500m"
               memory = "512Mi"
             }
           }
 
-          liveness_probe {
+          startup_probe {
             http_get {
               path = "/admin"
               port = 80
@@ -117,12 +117,12 @@ resource "kubernetes_daemonset" "pihole" {
 
           resources {
             limits = {
-              cpu    = "200m"
+              cpu    = "250m"
               memory = "256Mi"
             }
           }
 
-          liveness_probe {
+          startup_probe {
             http_get {
               path = "/metrics"
               port = 9617
@@ -157,7 +157,7 @@ resource "kubernetes_daemonset" "pihole" {
           }
 
           resources {
-            limits  = {
+            limits = {
               cpu    = "100m"
               memory = "256Mi"
             }
@@ -291,10 +291,10 @@ resource "kubernetes_config_map" "pihole_conf" {
 
   data = {
     "custom.list" = <<-EOF
-      ${join("\n", formatlist("%s pihole.${var.local_domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
-      ${join("\n", formatlist("%s grafana.${var.local_domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
-      ${join("\n", formatlist("%s prometheus.${var.local_domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
-      ${join("\n", formatlist("%s.${var.local_domain}", var.pihole_custom_dns_records))}
+      ${join("\n", formatlist("%s pihole.${var.domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
+      ${join("\n", formatlist("%s grafana.${var.domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
+      ${join("\n", formatlist("%s prometheus.${var.domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
+      ${join("\n", formatlist("%s.${var.domain}", var.pihole_custom_dns_records))}
     EOF
 
     "setupVars.conf" = <<-EOF
@@ -375,8 +375,12 @@ resource "kubernetes_ingress_v1" "pihole" {
   }
 
   spec {
+    tls {
+      hosts       = ["*.${var.domain}"]
+      secret_name = kubernetes_manifest.wildcard_cert.manifest.metadata.name
+    }
     rule {
-      host = "pihole.${var.local_domain}"
+      host = "pihole.${var.domain}"
       http {
         path {
           path      = "/"
@@ -394,4 +398,3 @@ resource "kubernetes_ingress_v1" "pihole" {
     }
   }
 }
-

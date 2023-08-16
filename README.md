@@ -22,10 +22,10 @@ user     = "{raspberry-pi-user}"
 password = "{raspberry-pi-password}"
 ```
 
-5. Create a `terrform.tfvars` file in `./terraform/stage1`.
+5. Create a `terrform.tfvars` file in `./terraform/stage2`.
 
 ```
-local_domain              = "{your-local-domain}"
+domain              = "{your-local-domain}"
 pihole_admin_password     = "{pihole-admin-password}"
 pihole_timezone           = "{your-timezone}
 pihole_custom_dns_records = [
@@ -42,6 +42,9 @@ terraform apply
 cd ../stage1
 terraform init
 terraform apply
+cd ../stage2
+terraform init
+terraform apply
 ```
 
 7. Change the DNS server in your router's DHCP settings to be the IP address of the Raspberry Pi.
@@ -56,8 +59,10 @@ terraform apply
   * [How to Install Ubuntu Server on your Raspberry Pi](https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi)
 * [MicroK8s](https://microk8s.io/)
   * [Installing MicroK8s on a Raspberry Pi](https://microk8s.io/docs/install-raspberry-pi)
-  * [NGINX Ingress Addon](https://microk8s.io/docs/addon-ingress)
-  * [Hostpath Storage Addon](https://microk8s.io/docs/addon-hostpath-storage)
+* [Hostpath Storage](https://microk8s.io/docs/addon-hostpath-storage)
+* [NGINX Ingress](https://github.com/kubernetes/ingress-nginx)
+* [Reflector](https://github.com/emberstack/kubernetes-reflector)
+* [cert-manager](https://cert-manager.io/)
 * [Prometheus](https://prometheus.io/)
 * [Grafana](https://grafana.com/)
 * [Pi-hole](https://pi-hole.net/)

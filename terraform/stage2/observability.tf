@@ -5,8 +5,12 @@ resource "kubernetes_ingress_v1" "grafana" {
   }
 
   spec {
+    tls {
+      hosts       = ["*.${var.domain}"]
+      secret_name = kubernetes_manifest.wildcard_cert.manifest.metadata.name
+    }
     rule {
-      host = "grafana.${var.local_domain}"
+      host = "grafana.${var.domain}"
       http {
         path {
           path      = "/"
@@ -32,8 +36,12 @@ resource "kubernetes_ingress_v1" "prometheus" {
   }
 
   spec {
+    tls {
+      hosts       = ["*.${var.domain}"]
+      secret_name = kubernetes_manifest.wildcard_cert.manifest.metadata.name
+    }
     rule {
-      host = "prometheus.${var.local_domain}"
+      host = "prometheus.${var.domain}"
       http {
         path {
           path      = "/"
