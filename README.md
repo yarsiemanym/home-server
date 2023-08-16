@@ -14,7 +14,7 @@ Terraform for setting up my home-lab Kubernetes cluster on Raspberry Pi.
    
 2. Insert the microSD card into the Raspberry Pi and power it on.
 
-3. If your router supports it, give your Raspberry Pi a static IP address.
+3. Assign your Raspberry Pi a static IP address.
 
 4. Create a `terrform.tfvars` file in `./terraform/stage0`.
 
@@ -27,7 +27,7 @@ password = "{raspberry-pi-password}"
 5. Create a `terrform.tfvars` file in `./terraform/stage2`.
 
 ```
-domain                    = "{your-local-domain}"
+domain                    = "{your-domain}"
 pihole_admin_password     = "{pihole-admin-password}"
 pihole_timezone           = "{your-timezone}
 pihole_custom_dns_records = [
@@ -51,7 +51,7 @@ terraform apply
 
 7. Change the DNS server in your router's DHCP settings to be the IP address of the Raspberry Pi.
 
-8. Open a web browser and navigate to https://pihole.{your-local-domain}/admin. You should see the Pi-Hole dashboard.
+8. Open a web browser and navigate to https://pihole.{your-domain}/admin. You should see the Pi-Hole dashboard.
 
 ## Links
 
