@@ -1,5 +1,7 @@
 # Raspberry Pi
 
+Terraform for setting up my home-lab Kubernetes cluster on Raspberry Pi.
+
 ## Setup
 
 1. Use [Raspberry Pi Imager](https://github.com/raspberrypi/rpi-imager) to flash [Ubuntu Server 22.04 LTS (64-bit ARM)](https://ubuntu.com/download/server/arm) onto a microSD card.
@@ -25,7 +27,7 @@ password = "{raspberry-pi-password}"
 5. Create a `terrform.tfvars` file in `./terraform/stage2`.
 
 ```
-domain              = "{your-local-domain}"
+domain                    = "{your-local-domain}"
 pihole_admin_password     = "{pihole-admin-password}"
 pihole_timezone           = "{your-timezone}
 pihole_custom_dns_records = [
