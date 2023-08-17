@@ -76,9 +76,13 @@ resource "kubernetes_daemonset" "pihole" {
           }
 
           resources {
+            requests = {
+              cpu    = "200m"
+              memory = "128Mi"
+            }
             limits = {
               cpu    = "500m"
-              memory = "256Mi"
+              memory = "512Mi"
             }
           }
 
@@ -87,6 +91,10 @@ resource "kubernetes_daemonset" "pihole" {
               path = "/admin"
               port = 80
             }
+
+            failure_threshold = 12
+            period_seconds    = 10
+            success_threshold = 1
           }
         }
 
@@ -118,7 +126,7 @@ resource "kubernetes_daemonset" "pihole" {
           resources {
             limits = {
               cpu    = "250m"
-              memory = "100Mi"
+              memory = "128Mi"
             }
           }
 
@@ -127,6 +135,10 @@ resource "kubernetes_daemonset" "pihole" {
               path = "/metrics"
               port = 9617
             }
+
+            failure_threshold = 12
+            period_seconds    = 10
+            success_threshold = 1
           }
         }
 
@@ -159,7 +171,7 @@ resource "kubernetes_daemonset" "pihole" {
           resources {
             limits = {
               cpu    = "100m"
-              memory = "100Mi"
+              memory = "128Mi"
             }
           }
         }
