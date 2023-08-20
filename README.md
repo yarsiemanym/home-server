@@ -20,9 +20,9 @@ Terraform for setting up my home-lab Kubernetes cluster.
 5. Create a `terrform.tfvars` file in `./terraform/stage0`.
 
 ```
-host     = "{raspberry-pi-ip-address}"
-user     = "{raspberry-pi-user}"
-password = "{raspberry-pi-password}"
+host     = "{ip-address}"
+user     = "{user}"
+password = "{password}"
 ```
 
 5. Create a `terrform.tfvars` file in `./terraform/stage2`.
