@@ -14,6 +14,4 @@ resource "null_resource" "systemd_resolved" {
       "sudo sed -i 's/nameserver 127.0.0.53/nameserver 208.67.222.222\\nnameserver 208.67.220.220/g' /etc/resolv.conf"
     ]
   }
-
-  depends_on = [null_resource.boot_parameters]
 }
