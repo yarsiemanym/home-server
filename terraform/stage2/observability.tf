@@ -29,37 +29,6 @@ resource "kubernetes_ingress_v1" "grafana" {
   }
 }
 
-resource "kubernetes_ingress_v1" "prometheus" {
-  metadata {
-    name      = "prometheus"
-    namespace = "observability"
-  }
-
-  spec {
-    tls {
-      hosts       = ["*.${var.domain}"]
-      secret_name = kubernetes_manifest.wildcard_cert.manifest.metadata.name
-    }
-    rule {
-      host = "prometheus.${var.domain}"
-      http {
-        path {
-          path      = "/"
-          path_type = "Prefix"
-          backend {
-            service {
-              name = "prometheus-operated"
-              port {
-                number = 9090
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
 resource "kubernetes_manifest" "pihole_service_monitor" {
   manifest = {
     apiVersion = "monitoring.coreos.com/v1"

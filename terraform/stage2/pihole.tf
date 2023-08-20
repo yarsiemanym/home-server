@@ -303,9 +303,10 @@ resource "kubernetes_config_map" "pihole_conf" {
 
   data = {
     "custom.list" = <<-EOF
+      ${join("\n", formatlist("%s coruscant.${var.domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
       ${join("\n", formatlist("%s pihole.${var.domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
       ${join("\n", formatlist("%s grafana.${var.domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
-      ${join("\n", formatlist("%s prometheus.${var.domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
+      ${join("\n", formatlist("%s argocd.${var.domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
       ${join("\n", formatlist("%s.${var.domain}", var.pihole_custom_dns_records))}
     EOF
 
