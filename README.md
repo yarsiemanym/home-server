@@ -57,14 +57,13 @@ terraform apply
 8. Log into ArgocD via the CLI.
 
 ```sh
-kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d
+argocd admin initial-password -n argocd
 
-argocd login argocd.{your-domain}
-# Yes, proceed insecurely
+argocd login argocd.{your-domain} --grpc-web
 # Enter "admin" as the username
 # Enter the initial admin password
 
-argocd account update-password
+argocd account update-password --grpc-web
 # Enter the initial admin password
 # Enter the new admin password
 # Confirm the new admin password
