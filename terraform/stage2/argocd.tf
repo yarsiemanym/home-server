@@ -9,6 +9,11 @@ resource "helm_release" "argocd" {
     name  = "configs.params.server\\.insecure"
     value = true
   }
+
+  set {
+    name  = "crds.keep"
+    value = false
+  }
 }
 
 resource "kubernetes_ingress_v1" "argocd" {
