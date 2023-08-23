@@ -7,7 +7,6 @@ Terraform for setting up my home-lab Kubernetes cluster.
 1. Setup your workstation.
    1. Install [Terraform](https://developer.hashicorp.com/terraform/downloads).
    2. Install [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl).
-   3. Install [ArgoCD CLI](https://argo-cd.readthedocs.io/en/stable/cli_installation/).
 
 2. Install [Ubuntu Server 22.04 LTS](https://ubuntu.com/download/server) on the target server.
    1. Connect to WiFi or Ethernet.
@@ -54,33 +53,22 @@ terraform apply
 
 7. Change the DNS server in your router's DHCP settings to be the IP address of the target server.
 
-8. Log into ArgocD via the CLI.
+8. Get the ArgoCD initial admin password.
 
 ```sh
-argocd admin initial-password -n argocd
-
-argocd login argocd.{your-domain} --grpc-web
-# Enter "admin" as the username
-# Enter the initial admin password
-
-argocd account update-password --grpc-web
-# Enter the initial admin password
-# Enter the new admin password
-# Confirm the new admin password
-
+kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d
 kubectl delete secret argocd-initial-admin-secret -n argocd
 ```
 
 9.  Check web apps running in Kubernetes.
    1. https://pihole.{your-domain}/admin
       1. Use the admin password specified in stage 2 variables.
-   2. https://argocd/{your-domain}
-      1. Use "admin" and the new admin password from step 8.
+   2. https://argocd.{your-domain}
+      1. Use "admin" and the initial admin password from step 8.
+      2. Naviate to https://argocd.{your-domain}/user-info?changePassword=true and change the admin password.
    3. https://grafana.{your-domain}
-      1. Use "admin" as the username adn "prom-operator" as the password.
+      1. Use "admin" as the username and "prom-operator" as the password.
       2. Navigate to https://grafana.{your-domain}/profile/password and change the admin password.
-
-10. Use the ArgoCD CLI to create ArgoCD applications for any other apps you want to run in Kubernetes.
 
 ## Links
 

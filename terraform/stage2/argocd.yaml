@@ -1,0 +1,22 @@
+crds:
+  keep: false
+server:
+  ingress:
+    enabled: true
+    hosts:
+      - "argocd.${DOMAIN}"
+    tls:
+      - secretName: "${TLS_SECRET_NAME}"
+        hosts:
+          - "*.${DOMAIN}"
+  ingressGrpc:
+    enabled: true
+    hosts:
+      - "argocd.${DOMAIN}"
+    tls:
+      - secretName: "${TLS_SECRET_NAME}"
+        hosts:
+          - "*.${DOMAIN}"
+configs:
+  params:
+    server.insecure: true
