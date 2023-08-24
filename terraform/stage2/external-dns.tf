@@ -90,7 +90,7 @@ resource "kubernetes_deployment" "external_dns" {
             "--registry=noop",
             "--policy=upsert-only",
             "--provider=pihole",
-            "--pihole-server=http://${kubernetes_service.pihole_http.metadata.0.name}.${kubernetes_service.pihole_http.metadata.0.namespace}.svc.cluster.local"
+            "--pihole-server=http://${kubernetes_service.pihole.metadata.0.name}.${kubernetes_service.pihole.metadata.0.namespace}.svc.cluster.local"
           ]
 
           env {

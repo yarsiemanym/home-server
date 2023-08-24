@@ -7,7 +7,7 @@ resource "kubernetes_manifest" "pihole_service_monitor" {
       name      = "pihole-exporter"
       namespace = "observability"
       labels = {
-        release = "kube-prom-stack"
+        release = "observability"
       }
     }
 
@@ -25,7 +25,8 @@ resource "kubernetes_manifest" "pihole_service_monitor" {
       endpoints = [
         {
           path     = "/metrics"
-          port     = "http"
+          port     = "metrics"
+          scheme   = "http"
           interval = "60s"
         }
       ]

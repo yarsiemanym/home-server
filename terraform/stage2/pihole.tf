@@ -314,31 +314,9 @@ resource "kubernetes_config_map" "pihole_conf" {
   }
 }
 
-resource "kubernetes_service" "pihole_http" {
+resource "kubernetes_service" "pihole" {
   metadata {
-    name      = "pihole-http"
-    namespace = kubernetes_namespace.pihole.metadata.0.name
-  }
-
-  spec {
-    selector = {
-      app = "pihole"
-    }
-
-    type = "ClusterIP"
-
-    port {
-      name        = "http"
-      protocol    = "TCP"
-      port        = 80
-      target_port = 80
-    }
-  }
-}
-
-resource "kubernetes_service" "pihole_exporter" {
-  metadata {
-    name      = "pihole-exporter"
+    name      = "pihole"
     namespace = kubernetes_namespace.pihole.metadata.0.name
     labels = {
       app = "pihole"
@@ -354,6 +332,13 @@ resource "kubernetes_service" "pihole_exporter" {
 
     port {
       name        = "http"
+      protocol    = "TCP"
+      port        = 80
+      target_port = 80
+    }
+
+    port {
+      name        = "metrics"
       protocol    = "TCP"
       port        = 9617
       target_port = 9617
@@ -383,7 +368,7 @@ resource "kubernetes_ingress_v1" "pihole" {
           path_type = "Prefix"
           backend {
             service {
-              name = kubernetes_service.pihole_http.metadata.0.name
+              name = kubernetes_service.pihole.metadata.0.name
               port {
                 number = 80
               }
