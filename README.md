@@ -81,7 +81,7 @@ kubectl delete secret argocd-initial-admin-secret -n argocd
 ## Links
 
 * [Ubuntu](https://ubuntu.com/)
-  * [Ubuntu Server 22.04 LTS (amd64)](https://ubuntu.com/download/server)
+  * [Ubuntu Server 22.04 LTS](https://ubuntu.com/download/server)
 * [Teraform](https://terraform.io)
   * [Null Provider](https://registry.terraform.io/providers/hashicorp/null/latest)
   * [Kubernetes Provider](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs)
