@@ -7,6 +7,7 @@ Terraform for setting up my home-lab Kubernetes cluster.
 1. Setup your workstation.
    1. Install [Terraform](https://developer.hashicorp.com/terraform/downloads).
    2. Install [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl).
+   3. Install [Helm](https://helm.sh/docs/intro/install/).
 
 2. Install [Ubuntu Server 22.04 LTS](https://ubuntu.com/download/server) on the target server.
    1. Connect to WiFi or Ethernet.
@@ -81,6 +82,10 @@ kubectl delete secret argocd-initial-admin-secret -n argocd
 
 * [Ubuntu](https://ubuntu.com/)
   * [Ubuntu Server 22.04 LTS (amd64)](https://ubuntu.com/download/server)
+* [Teraform](https://terraform.io)
+  * [Null Provider](https://registry.terraform.io/providers/hashicorp/null/latest)
+  * [Kubernetes Provider](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs)
+  * [Helm Provider](https://registry.terraform.io/providers/hashicorp/helm/latest)
 * [MicroK8s](https://microk8s.io/)
   * [Hostpath Storage](https://microk8s.io/docs/addon-hostpath-storage)
 * [NGINX Ingress](https://github.com/kubernetes/ingress-nginx)
