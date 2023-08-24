@@ -70,12 +70,12 @@ kubectl delete secret argocd-initial-admin-secret -n argocd
 
 10.  Check web apps running in Kubernetes.
    1. https://pihole.{your-domain}/admin
-      1. Use the admin password specified in stage 2 variables.
+      1. Use the admin password specified in the stage 2 variables.
    2. https://argocd.{your-domain}
       1. Use "admin" and the initial admin password from step 8.
       2. Naviate to https://argocd.{your-domain}/user-info?changePassword=true and change the admin password.
    3. https://grafana.{your-domain}
-      1. Use "admin" as the username and the grafana admin password you specified in the stage 2 `terraform.tfvars` file.
+      1. Use "admin" as the username and the grafana admin password you specified in the stage 2 variables.
 
 ## Links
 
