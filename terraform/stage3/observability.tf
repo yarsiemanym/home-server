@@ -13,7 +13,7 @@ resource "kubernetes_manifest" "pihole_service_monitor" {
 
     spec = {
       namespaceSelector = {
-        matchNames = [kubernetes_namespace.pihole.metadata.0.name]
+        matchNames = ["pihole"]
       }
 
       selector = {
