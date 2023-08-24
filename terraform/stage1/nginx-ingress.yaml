@@ -1,0 +1,13 @@
+controller:
+  enableCustomResources: true
+  enableCertManager: true
+  enableExternalDNS: true
+  enableLatencyMetrics: true
+  enableTLSPassthrough: true
+  healthStatus: true
+  service:
+    externalIPs:
+      - ${EXTERNAL_IP}
+  setAsDefaultIngress: true
+prometheus:
+  create: true

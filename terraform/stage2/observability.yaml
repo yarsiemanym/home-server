@@ -1,16 +1,12 @@
-configs:
-  params:
-    server.insecure: true
-crds:
-  keep: false
-server:
+grafana:
+  adminPassword: ${ADMIN_PASSWORD}
   ingress:
     enabled: true
     hosts:
-      - argocd.${DOMAIN}
+      - grafana.${DOMAIN}
     tls:
       - secretName: ${TLS_SECRET_NAME}
         hosts:
-          - argocd.${DOMAIN}
+          - grafana.${DOMAIN}
     annotations:
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"

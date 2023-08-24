@@ -31,10 +31,7 @@ resource "null_resource" "microk8s_addons" {
     when = create
     inline = [
       "echo ${var.password} | sudo -p '' -S true",
-      "microk8s enable ingress",
-      "microk8s enable hostpath-storage",
-      "microk8s enable cert-manager",
-      "microk8s enable observability"
+      "microk8s enable hostpath-storage"
     ]
   }
 

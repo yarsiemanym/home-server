@@ -1,65 +1,54 @@
-resource "kubernetes_ingress_v1" "grafana" {
+resource "kubernetes_namespace" "observability" {
   metadata {
-    name      = "grafana"
-    namespace = "observability"
-  }
-
-  spec {
-    tls {
-      hosts       = ["*.${var.domain}"]
-      secret_name = kubernetes_manifest.wildcard_cert.manifest.metadata.name
-    }
-    rule {
-      host = "grafana.${var.domain}"
-      http {
-        path {
-          path      = "/"
-          path_type = "Prefix"
-          backend {
-            service {
-              name = "kube-prom-stack-grafana"
-              port {
-                number = 80
-              }
-            }
-          }
-        }
-      }
-    }
+    name = "observability"
   }
 }
 
-resource "kubernetes_manifest" "pihole_service_monitor" {
+resource "helm_release" "observability" {
+  name       = "observability"
+  namespace  = kubernetes_namespace.observability.metadata.0.name
+  repository = "https://prometheus-community.github.io/helm-charts"
+  chart      = "kube-prometheus-stack"
+
+  values = [
+    templatefile("./observability.yaml", {
+      ADMIN_PASSWORD  = var.grafana_admin_password
+      DOMAIN          = var.domain
+      TLS_SECRET_NAME = kubernetes_manifest.grafana_cert.manifest.spec.secretName
+      }
+  )]
+}
+
+resource "kubernetes_manifest" "grafana_cert" {
   manifest = {
-    apiVersion = "monitoring.coreos.com/v1"
-    kind       = "ServiceMonitor"
+    apiVersion = "cert-manager.io/v1"
+    kind       = "Certificate"
 
     metadata = {
-      name      = "pihole-exporter"
-      namespace = "observability"
-      labels = {
-        release = "kube-prom-stack"
-      }
+      name      = "grafana-cert"
+      namespace = kubernetes_namespace.observability.metadata.0.name
     }
 
     spec = {
-      namespaceSelector = {
-        matchNames = [kubernetes_namespace.pihole.metadata.0.name]
+      secretName = "grafana-cert"
+      commonName = "grafana.${var.domain}"
+      dnsNames   = ["grafana.${var.domain}"]
+
+      subject = {
+        organizations       = ["Home"]
+        organizationalUnits = ["IT"]
       }
 
-      selector = {
-        matchLabels = {
-          app = "pihole"
-        }
+      issuerRef = {
+        name  = kubernetes_manifest.acme_cluster_issuer.manifest.metadata.name
+        kind  = "ClusterIssuer"
+        group = "cert-manager.io"
       }
 
-      endpoints = [
-        {
-          path     = "/metrics"
-          port     = "http"
-          interval = "60s"
-        }
-      ]
+      privateKey = {
+        algorithm = "RSA"
+        size      = 4096
+      }
     }
   }
 }

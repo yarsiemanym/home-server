@@ -47,3 +47,7 @@ variable "aws_secret_access_key" {
 variable "operator_email_address" {
     type = string
 }
+
+variable "grafana_admin_password" {
+    type = string
+}

@@ -75,17 +75,6 @@ resource "kubernetes_daemonset" "pihole" {
             mount_path = "/etc/pihole"
           }
 
-          resources {
-            requests = {
-              cpu    = "200m"
-              memory = "128Mi"
-            }
-            limits = {
-              cpu    = "500m"
-              memory = "512Mi"
-            }
-          }
-
           startup_probe {
             http_get {
               path = "/admin"
@@ -120,13 +109,6 @@ resource "kubernetes_daemonset" "pihole" {
                 name = kubernetes_secret.pihole_admin_password.metadata.0.name
                 key  = "password"
               }
-            }
-          }
-
-          resources {
-            limits = {
-              cpu    = "250m"
-              memory = "128Mi"
             }
           }
 
@@ -167,13 +149,6 @@ resource "kubernetes_daemonset" "pihole" {
             name       = "pihole-data"
             mount_path = "/etc/pihole"
           }
-
-          resources {
-            limits = {
-              cpu    = "100m"
-              memory = "128Mi"
-            }
-          }
         }
 
         volume {
@@ -212,6 +187,12 @@ resource "kubernetes_secret" "pihole_admin_password" {
   metadata {
     name      = "pihole-admin-password"
     namespace = kubernetes_namespace.pihole.metadata.0.name
+    annotations = {
+      "reflector.v1.k8s.emberstack.com/reflection-allowed"            = true
+      "reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces" = "external-dns"
+      "reflector.v1.k8s.emberstack.com/reflection-auto-enabled"       = true
+      "reflector.v1.k8s.emberstack.com/reflection-auto-namespaces"    = "external-dns"
+    }
   }
 
   data = {
@@ -303,11 +284,6 @@ resource "kubernetes_config_map" "pihole_conf" {
 
   data = {
     "custom.list" = <<-EOF
-      ${join("\n", formatlist("%s coruscant.${var.domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
-      ${join("\n", formatlist("%s pihole.${var.domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
-      ${join("\n", formatlist("%s grafana.${var.domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
-      ${join("\n", formatlist("%s argocd.${var.domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
-      ${join("\n", formatlist("%s echo.${var.domain}", data.kubernetes_nodes.all_nodes.nodes.*.status.0.addresses.0.address))}
       ${join("\n", formatlist("%s.${var.domain}", var.pihole_custom_dns_records))}
     EOF
 
@@ -389,12 +365,15 @@ resource "kubernetes_ingress_v1" "pihole" {
   metadata {
     name      = "pihole"
     namespace = kubernetes_namespace.pihole.metadata.0.name
+    annotations = {
+      "nginx.ingress.kubernetes.io/force-ssl-redirect" = true
+    }
   }
 
   spec {
     tls {
-      hosts       = ["*.${var.domain}"]
-      secret_name = kubernetes_manifest.wildcard_cert.manifest.metadata.name
+      hosts       = ["pihole.${var.domain}"]
+      secret_name = kubernetes_manifest.pihole_cert.manifest.spec.secretName
     }
     rule {
       host = "pihole.${var.domain}"
@@ -411,6 +390,40 @@ resource "kubernetes_ingress_v1" "pihole" {
             }
           }
         }
+      }
+    }
+  }
+}
+
+resource "kubernetes_manifest" "pihole_cert" {
+  manifest = {
+    apiVersion = "cert-manager.io/v1"
+    kind       = "Certificate"
+
+    metadata = {
+      name      = "pihole-cert"
+      namespace = kubernetes_namespace.pihole.metadata.0.name
+    }
+
+    spec = {
+      secretName = "pihole-cert"
+      commonName = "pihole.${var.domain}"
+      dnsNames   = ["pihole.${var.domain}"]
+
+      subject = {
+        organizations       = ["Home"]
+        organizationalUnits = ["IT"]
+      }
+
+      issuerRef = {
+        name  = kubernetes_manifest.acme_cluster_issuer.manifest.metadata.name
+        kind  = "ClusterIssuer"
+        group = "cert-manager.io"
+      }
+
+      privateKey = {
+        algorithm = "RSA"
+        size      = 4096
       }
     }
   }
