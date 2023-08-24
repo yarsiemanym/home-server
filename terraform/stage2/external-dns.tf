@@ -102,17 +102,6 @@ resource "kubernetes_deployment" "external_dns" {
               }
             }
           }
-
-          resources {
-            requests = {
-              cpu    = "100m"
-              memory = "256Mi"
-            }
-            limits = {
-              cpu    = "500m"
-              memory = "512Mi"
-            }
-          }
         }
 
         security_context {
