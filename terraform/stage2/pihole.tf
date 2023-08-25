@@ -87,43 +87,6 @@ resource "kubernetes_daemonset" "pihole" {
           }
         }
 
-        container {
-          image = "ekofr/pihole-exporter:v0.4.0"
-          name  = "exporter"
-
-          port {
-            name           = "http"
-            protocol       = "TCP"
-            container_port = 9617
-          }
-
-          env {
-            name  = "PIHOLE_HOSTNAME"
-            value = "localhost"
-          }
-
-          env {
-            name = "PIHOLE_PASSWORD"
-            value_from {
-              secret_key_ref {
-                name = kubernetes_secret.pihole_admin_password.metadata.0.name
-                key  = "password"
-              }
-            }
-          }
-
-          startup_probe {
-            http_get {
-              path = "/metrics"
-              port = 9617
-            }
-
-            failure_threshold = 12
-            period_seconds    = 10
-            success_threshold = 1
-          }
-        }
-
         init_container {
           image   = "busybox:1.36"
           name    = "init"

@@ -55,9 +55,6 @@ terraform apply
 cd ../stage2
 terraform init
 terraform apply
-cd ../stage3
-terraform init
-terraform apply
 ```
 
 8. Change the DNS server in your router's DHCP settings to be the IP address of the target server.
