@@ -1,8 +1,6 @@
 configs:
   params:
     server.insecure: true
-crds:
-  keep: false
 server:
   ingress:
     enabled: true
