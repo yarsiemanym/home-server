@@ -73,10 +73,10 @@ kubectl delete secret argocd-initial-admin-secret -n argocd
      1.  https://pihole.{your-domain}/admin
          1.  Use the admin password specified in the stage 2 variables.
      2.  https://argocd.{your-domain}
-         1.  Use "admin" and the initial admin password from step 8.
-     3.  Naviate to https://argocd.{your-domain}/user-info?changePassword=true and change the admin password.
-         1.  https://grafana.{your-domain}
-         2.  Use "admin" as the username and the grafana admin password you specified in the stage 2 variables.
+         1.  Use "admin" and the initial admin password from step 9.
+         2.  Navigate to https://argocd.{your-domain}/user-info?changePassword=true and change the admin password.
+     3.  https://grafana.{your-domain}
+         1.  Use "admin" as the username and the grafana admin password you specified in the stage 2 variables.
 
 ## Links
 
