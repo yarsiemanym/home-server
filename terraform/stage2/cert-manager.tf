@@ -10,11 +10,9 @@ resource "kubernetes_manifest" "acme_cluster_issuer" {
     spec = {
       acme = {
         email = var.operator_email_address
-        //server = "https://acme-v02.api.letsencrypt.org/directory"
-        server = "https://acme-staging-v02.api.letsencrypt.org/directory"
+        server = "https://acme-v02.api.letsencrypt.org/directory"
         privateKeySecretRef = {
-          //name = "letsencrypt-prod"
-          name = "letsencrypt-staging"
+          name = "letsencrypt-prod"
         }
         solvers = [
           {
