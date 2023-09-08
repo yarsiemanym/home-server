@@ -167,6 +167,17 @@ resource "kubernetes_manifest" "pihole_admin_password" {
       target = {
         name           = "pihole-admin-password"
         creationPolicy = "Owner"
+
+        template = {
+          metadata = {
+            annotations = {
+              "reflector.v1.k8s.emberstack.com/reflection-allowed" = "true"
+              "reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces" = "external-dns"
+              "reflector.v1.k8s.emberstack.com/reflection-auto-enabled" = "true"
+              "reflector.v1.k8s.emberstack.com/reflection-auto-namespaces" = "external-dns"
+            }
+          }
+        }
       }
 
       data = [
