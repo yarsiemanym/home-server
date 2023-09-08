@@ -59,7 +59,7 @@ resource "kubernetes_daemonset" "pihole" {
             name = "WEBPASSWORD"
             value_from {
               secret_key_ref {
-                name = kubernetes_secret.pihole_admin_password.metadata.0.name
+                name = kubernetes_manifest.pihole_admin_password.manifest.spec.target.name
                 key  = "password"
               }
             }
@@ -146,20 +146,40 @@ resource "kubernetes_daemonset" "pihole" {
   }
 }
 
-resource "kubernetes_secret" "pihole_admin_password" {
-  metadata {
-    name      = "pihole-admin-password"
-    namespace = kubernetes_namespace.pihole.metadata.0.name
-    annotations = {
-      "reflector.v1.k8s.emberstack.com/reflection-allowed"            = true
-      "reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces" = "external-dns"
-      "reflector.v1.k8s.emberstack.com/reflection-auto-enabled"       = true
-      "reflector.v1.k8s.emberstack.com/reflection-auto-namespaces"    = "external-dns"
-    }
-  }
+resource "kubernetes_manifest" "pihole_admin_password" {
+  manifest = {
+    apiVersion = "external-secrets.io/v1beta1"
+    kind       = "ExternalSecret"
 
-  data = {
-    password = var.pihole_admin_password
+    metadata = {
+      name      = "pihole-admin-password"
+      namespace = kubernetes_namespace.pihole.metadata.0.name
+    }
+
+    spec = {
+      refreshInterval = "1h"
+
+      secretStoreRef = {
+        name      = "aws-secrets-manager"
+        kind      = "ClusterSecretStore"
+      }
+
+      target = {
+        name           = "pihole-admin-password"
+        creationPolicy = "Owner"
+      }
+
+      data = [
+        {
+          secretKey = "password"
+
+          remoteRef = {
+            key      = "pihole-admin-password"
+            property = "password"
+          }
+        }
+      ]
+    }
   }
 }
 

@@ -10,10 +10,6 @@ variable "dhcp_server" {
     type = string
 }
 
-variable "pihole_admin_password" {
-    type = string
-}
-
 variable "pihole_timezone" {
     type = string
 }
@@ -30,18 +26,6 @@ variable "pihole_dns_2" {
 
 variable "pihole_custom_dns_records" {
     type = list(string)
-}
-
-variable "aws_region" {
-    type = string
-}
-
-variable "aws_access_key_id" {
-    type = string
-}
-
-variable "aws_secret_access_key" {
-    type = string
 }
 
 variable "operator_email_address" {

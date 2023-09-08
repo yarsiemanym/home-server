@@ -97,7 +97,7 @@ resource "kubernetes_deployment" "external_dns" {
             name = "EXTERNAL_DNS_PIHOLE_PASSWORD"
             value_from {
               secret_key_ref {
-                name = kubernetes_secret.pihole_admin_password.metadata.0.name
+                name = kubernetes_manifest.pihole_admin_password.manifest.spec.target.name
                 key  = "password"
               }
             }

@@ -25,7 +25,15 @@ user     = "{user}"
 password = "{password}"
 ```
 
-6. Create a `terrform.tfvars` file in `./terraform/stage2`.
+6. Create a `terrform.tfvars` file in `./terraform/stage1`.
+
+```
+aws_region                = "{your-aws-region}"
+aws_access_key_id         = "{your-aws-access-key-id}"
+aws_secret_access_key     = "{your-aws-secret-key"
+```
+
+7. Create a `terrform.tfvars` file in `./terraform/stage2`.
 
 ```
 domain                    = "{your-domain}"
@@ -36,14 +44,11 @@ pihole_timezone           = "{your-timezone}
 pihole_custom_dns_records = [
   "{ip-address} {subdomain}"
 ]
-aws_region                = "{your-aws-region}"
-aws_access_key_id         = "{your-aws-access-key-id}"
-aws_secret_access_key     = "{your-aws-secret-key"
 operator_email_address    = "{your-email-address}"
 grafana_admin_password    = "{grafana-admin-password}"
 ```
 
-7. Apply the Terraform.
+8. Apply the Terraform.
 
 ```sh
 cd ./terraform/stage0
@@ -57,16 +62,16 @@ terraform init
 terraform apply
 ```
 
-8. Change the DNS server in your router's DHCP settings to be the IP address of the target server.
+9. Change the DNS server in your router's DHCP settings to be the IP address of the target server.
 
-9. Get the ArgoCD initial admin password.
+10. Get the ArgoCD initial admin password.
 
 ```sh
 kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d
 kubectl delete secret argocd-initial-admin-secret -n argocd
 ```
 
-10.  Check web apps running in Kubernetes.
+11.  Check web apps running in Kubernetes.
      1.  https://pihole.{your-domain}/admin
          1.  Use the admin password specified in the stage 2 variables.
      2.  https://argocd.{your-domain}
@@ -87,6 +92,8 @@ kubectl delete secret argocd-initial-admin-secret -n argocd
   * [Hostpath Storage](https://microk8s.io/docs/addon-hostpath-storage)
 * [NGINX Ingress](https://github.com/kubernetes/ingress-nginx)
   * [Helm Chart](https://docs.nginx.com/nginx-ingress-controller/installation/installation-with-helm/#installing-the-chart)
+* [External Secrets](https://external-secrets.io/)
+  * [Helm Chart](https://external-secrets.io/latest/introduction/getting-started/#option-1-install-from-chart-repository)
 * [Reflector](https://github.com/emberstack/kubernetes-reflector)
   * [Helm Chart](https://artifacthub.io/packages/helm/emberstack/reflector)
 * [cert-manager](https://cert-manager.io/)
