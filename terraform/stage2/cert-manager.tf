@@ -25,7 +25,6 @@ resource "kubernetes_manifest" "acme_cluster_issuer" {
                 accessKeyID = data.kubernetes_secret.aws.data.access_key_id
                 secretAccessKeySecretRef = {
                   name      = data.kubernetes_secret.aws.metadata.0.name
-                  namesapce = data.kubernetes_secret.aws.metadata.0.namespace
                   key       = "secret_access_key"
                 }
               }

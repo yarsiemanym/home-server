@@ -2,6 +2,12 @@ resource "kubernetes_secret" "aws" {
   metadata {
     name      = "aws"
     namespace = "kube-system"
+    annotations = {
+      "reflector.v1.k8s.emberstack.com/reflection-allowed" = "true"
+      "reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces": "cert-manager"
+      "reflector.v1.k8s.emberstack.com/reflection-auto-enabled" = "true"
+      "reflector.v1.k8s.emberstack.com/reflection-auto-namespaces": "cert-manager"
+    }
   }
 
   data = {
