@@ -27,7 +27,7 @@ resource "kubernetes_daemonset" "pihole" {
       spec {
 
         container {
-          image = "pihole/pihole:2023.05.2"
+          image = "pihole/pihole:2024.01.0"
           name  = "pihole"
 
           port {
